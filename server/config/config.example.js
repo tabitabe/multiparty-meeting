@@ -34,7 +34,7 @@ module.exports =
 	// Listening port for http server. 
 	listeningRedirectPort : 80,
 	// STUN/TURN 
-	turnServers   : [
+	turnServers           : [
 		{
 			urls : [
 				'turn:example.com:443?transport=tcp'
