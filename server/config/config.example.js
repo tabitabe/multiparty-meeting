@@ -1,11 +1,25 @@
 module.exports =
 {
-	// oAuth2 conf
-	oauth2 :
+	// Passport auth conf
+	auth :
 	{
-		clientID  			: '',
-		clientSecret	: '',
-		callbackURL 	: 'https://mYDomainName:port/auth-callback'
+		// Dataporten
+		dataporten :
+		{
+			clientID   		: 'clientID',
+			clientSecret	: 'clientSecret',
+			callbackURL 	: 'https://myDomainName:port/auth/dataporten/callback'
+		},
+		// SimpleSAMLphp + OAuth2 modul
+		ssp :
+		{
+			authorizationURL : 'https://ssp.example.com/simplesaml/module.php/oauth2/authorize.php',
+			tokenURL         : 'https://ssp.example.com/simplesaml/module.php/oauth2/access_token.php',
+			profileUrl       : 'https://ssp.example.com/simplesaml/module.php/oauth2/userinfo.php',
+			clientID         : 'clientID',
+			clientSecret     : 'clientSecret',
+			callbackURL      : 'https://myDomainName:port/auth/ssp/callback'
+		}
 	},
 	// Listening hostname for `gulp live|open`.
 	domain : 'localhost',
@@ -15,7 +29,7 @@ module.exports =
 		key  : `${__dirname}/../certs/mediasoup-demo.localhost.key.pem`
 	},
 	// Listening port for https server.
-	listeningPort : 443,
+	listeningPort         : 443,
 	// Any http request is redirected to https.
 	// Listening port for http server. 
 	listeningRedirectPort : 80,
