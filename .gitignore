@@ -7,3 +7,5 @@ node_modules/
 /server/public/
 /server/certs/
 !/server/certs/mediasoup-demo.localhost.*
+yarn.lock
+.vscode
