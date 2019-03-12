@@ -15,6 +15,7 @@ const Room = require('./lib/Room');
 const Dataporten = require('passport-dataporten');
 const utils = require('./util');
 const base64 = require('base-64');
+const SSPStrategy = require('passport-ssp').Strategy;
 
 /* eslint-disable no-console */
 console.log('- process.env.DEBUG:', process.env.DEBUG);
@@ -41,22 +42,23 @@ const app = express();
 
 app.use(compression());
 
-const dataporten = new Dataporten.Setup(config.oauth2);
+const dataporten = new Dataporten.Setup(config.auth.dataporten);
 
-app.all('*', (req, res, next) =>
-{
-	if (req.secure)
+const ssp=new SSPStrategy(config.auth.ssp,
+	function(accessToken, refreshToken, profile, done)
 	{
-		return next();
+		done(null, profile);
 	}
+);
 
-	res.redirect(`https://${req.hostname}${req.url}`);
-});
+dataporten.passport.use(ssp);
 
+// Init Dataporten and passoport.
 app.use(dataporten.passport.initialize());
 app.use(dataporten.passport.session());
 
-app.get('/login', (req, res, next) =>
+// Login
+app.get('/auth/dataporten/login', (req, res, next) =>
 {
 	dataporten.passport.authenticate('dataporten', {
 		state : base64.encode(JSON.stringify({
@@ -68,16 +70,24 @@ app.get('/login', (req, res, next) =>
 	})(req, res, next);
 });
 
-dataporten.setupLogout(app, '/logout');
-
-app.get('/', (req, res) =>
+app.get('/auth/ssp/login', (req, res, next) =>
 {
-	res.sendFile(`${__dirname}/public/chooseRoom.html`);
+	dataporten.passport.authenticate('ssp', {
+		state : base64.encode(JSON.stringify({
+			roomId   : req.query.roomId,
+			peerName : req.query.peerName,
+			code     : utils.random(10)
+		}))
+
+	})(req, res, next);
 });
 
+// Logout
+dataporten.setupLogout(app, '/auth/logout');
+
 app.get(
-	'/auth-callback',
-	dataporten.passport.authenticate('dataporten', { failureRedirect: '/login' }),
+	'/auth/dataporten/callback',
+	dataporten.passport.authenticate('dataporten', { failureRedirect: '/auth/login' }),
 	(req, res) =>
 	{
 		const state = JSON.parse(base64.decode(req.query.state));
@@ -99,6 +109,50 @@ app.get(
 		res.send('');
 	}
 );
+app.get('/auth/login', 
+	(req, res) => 
+	{
+		res.send('Login');
+	}
+);
+app.get('/auth/ssp/callback',
+	dataporten.passport.authenticate('ssp', { failureRedirect: '/auth/login' }),
+	(req, res) =>
+	{
+		const state = JSON.parse(base64.decode(req.query.state));
+
+		if (rooms.has(state.roomId))
+		{
+			const data =
+			{
+				peerName : state.peerName,
+				name     : req.user.displayName,
+				picture  : req.user.photos[0].value
+			};
+
+			const room = rooms.get(state.roomId);
+
+			room.authCallback(data);
+		}
+
+		res.send('');
+	}
+);
+
+app.all('*', (req, res, next) =>
+{
+	if (req.secure)
+	{
+		return next();
+	}
+
+	res.redirect(`https://${req.hostname}${req.url}`);
+});
+
+app.get('/', (req, res) =>
+{
+	res.sendFile(`${__dirname}/public/chooseRoom.html`);
+});
 
 // Serve all files in the public folder as static files.
 app.use(express.static('public'));

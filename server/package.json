@@ -14,6 +14,7 @@
     "express": "^4.16.3",
     "mediasoup": "^2.6.9",
     "passport-dataporten": "^1.3.0",
+    "passport-ssp": "^1.0.0",
     "socket.io": "^2.1.1"
   },
   "devDependencies": {
