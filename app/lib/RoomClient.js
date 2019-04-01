@@ -211,11 +211,14 @@ export default class RoomClient
 		});
 	}
 
-	login()
+	login(provider)
 	{
-		const url = `/auth/ssp/login?roomId=${this._room.roomId}&peerName=${this._peerName}`;
+		if (provider)
+		{
+			const url = `/auth/${provider}/login?roomId=${	this._room.roomId}&peerName=${this._peerName}`;
 
-		this._loginWindow = window.open(url, 'loginWindow');
+			this._loginWindow = window.open(url, 'loginWindow');
+		}
 	}
 
 	logout()

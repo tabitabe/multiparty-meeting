@@ -83,7 +83,11 @@ app.get('/auth/ssp/login', (req, res, next) =>
 });
 
 // Logout
-dataporten.setupLogout(app, '/auth/logout');
+// dataporten.setupLogout(app, '/auth/logout');
+app.get('/auth/logout', (req, res) => 
+{
+	req.logout();
+});
 
 app.get(
 	'/auth/dataporten/callback',

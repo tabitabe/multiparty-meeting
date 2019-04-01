@@ -33,6 +33,7 @@ const Settings = ({
 		webcams = [];
 
 	let audioDevices;
+
 	let audioDevicesText;
 
 	if (me.canChangeAudioDevice)

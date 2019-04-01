@@ -25,6 +25,7 @@ const producers = (state = initialState, action) =>
 		{
 			const { producerId, originator } = action.payload;
 			const producer = state[producerId];
+
 			let newProducer;
 
 			if (originator === 'local')
@@ -48,6 +49,7 @@ const producers = (state = initialState, action) =>
 		{
 			const { producerId, originator } = action.payload;
 			const producer = state[producerId];
+
 			let newProducer;
 
 			if (originator === 'local')

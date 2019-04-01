@@ -5,6 +5,7 @@ import classnames from 'classnames';
 import * as appPropTypes from '../appPropTypes';
 import { withRoomContext } from '../../RoomContext';
 import FullScreen from '../FullScreen';
+import AuthDialog from './AuthProviders';
 
 class Sidebar extends Component
 {
@@ -64,7 +65,9 @@ class Sidebar extends Component
 		} = this.props;
 
 		let screenState;
+
 		let screenTip;
+
 		let lockState = 'unlocked';
 
 		if (me.needExtension)
@@ -164,6 +167,10 @@ class Sidebar extends Component
 								data-place='right'
 								data-type='dark'
 								onClick={() => roomClient.login()}
+							/>
+
+							<AuthDialog
+								roomClient={roomClient}
 							/>
 						</Otherwise>
 					</Choose>
